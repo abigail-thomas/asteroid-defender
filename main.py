@@ -19,15 +19,18 @@ game_over = False
 scroll = 0
 scroll_speed = .5
 score = 0
+asteroid_gap = 50
 
 # load images
 bg = pygame.image.load('asteroid-defender/img/stars.png')
+asteroid = pygame.image.load('asteroid-defender/img/asteroid.png')
 ship = pygame.image.load('asteroid-defender/img/ship.png')
 title = pygame.image.load('asteroid-defender/img/title.png')
 start = pygame.image.load('asteroid-defender/img/start.png')
 
 # resize images
 bg = pygame.transform.scale(bg, (770, 530))
+asteroid = pygame.transform.scale(asteroid, (100, 100))
 ship = pygame.transform.scale(ship, (150, 150))
 title = pygame.transform.scale(title, (700, 100))
 
@@ -39,24 +42,29 @@ title = pygame.transform.scale(title, (700, 100))
 # the ship
 
 
-# the asteroids
+# the asteroids 
+'''
 class Asteroid(pygame.sprite.Sprite):
 
     def __init__(self, x, y, position):
-        self.image = pygame.image.load('asteroid-defender/img/asteroid.png')
-        self.rect = self.image.get_ret()
+        self.surface = pygame.Surface((100, 100))
 
-        if position == 1:
-            self.rect.topleft = [x, y]
-
+    def draw(self, surface):
+        self.surface.blit(surface, (0, 0))
     def update(self):
         self.rect.y += scroll_speed    # move asteroids down
-        if self.rect.top > 770:
+        if self.rect.right < 0:
             self.kill()    # delete astroid if off screen
+
+asteroid_group = pygame.sprite.Group()'''
+
 
 
 # main loop
 while not game_over:
+
+    clock.tick(fps)
+    time = pygame.time.get_ticks()    # in milliseconds
 
     # draw background (two so theres seamless scrolling)
     screen.blit(bg, (0, scroll))
@@ -64,6 +72,14 @@ while not game_over:
 
     # draw ship
     screen.blit(ship, ((screen_width / 2) - 75, 400))
+
+    # draw asteroids
+    # asteroid_group.draw(pygame.display.get_surface())
+    # print(time)
+    screen.blit(asteroid, (0, scroll))
+    if (time / 1000) > 10:
+        screen.blit(asteroid, (random.randint(20, 750), scroll))
+        time = 0
 
     # draw title
     # screen.blit(title, ((screen_width / 2) - 350, 40))
