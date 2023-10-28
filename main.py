@@ -30,7 +30,7 @@ start = pygame.image.load('asteroid-defender/img/start.png')
 
 # resize images
 bg = pygame.transform.scale(bg, (770, 530))
-asteroid = pygame.transform.scale(asteroid, (100, 100))
+asteroid = pygame.transform.scale(asteroid, (random.randint(50, 100), random.randint(50, 100)))
 ship = pygame.transform.scale(ship, (150, 150))
 title = pygame.transform.scale(title, (700, 100))
 
@@ -76,10 +76,7 @@ while not game_over:
     # draw asteroids
     # asteroid_group.draw(pygame.display.get_surface())
     # print(time)
-    screen.blit(asteroid, (0, scroll))
-    if (time / 1000) > 10:
-        screen.blit(asteroid, (random.randint(20, 750), scroll))
-        time = 0
+    screen.blit(asteroid, (100, scroll))
 
     # draw title
     # screen.blit(title, ((screen_width / 2) - 350, 40))
