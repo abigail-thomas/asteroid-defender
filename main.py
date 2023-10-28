@@ -19,7 +19,9 @@ game_over = False
 scroll = 0
 scroll_speed = .5
 score = 0
-asteroid_gap = 50
+# asteroid_gap = 50
+ship_move = 0
+ship_speed = 0
 
 # load images
 bg = pygame.image.load('asteroid-defender/img/stars.png')
@@ -41,27 +43,20 @@ title = pygame.transform.scale(title, (700, 100))
 
 # the ship
 
-
 # the asteroids 
 '''
-class Asteroid(pygame.sprite.Sprite):
-
-    def __init__(self, x, y, position):
-        self.surface = pygame.Surface((100, 100))
-
-    def draw(self, surface):
-        self.surface.blit(surface, (0, 0))
-    def update(self):
-        self.rect.y += scroll_speed    # move asteroids down
-        if self.rect.right < 0:
-            self.kill()    # delete astroid if off screen
-
-asteroid_group = pygame.sprite.Group()'''
-
-
+def ship(x, y):
+    screen.blit(ship, (x, y))
+x = (screen_width * .45)
+y = 400'''
 
 # main loop
 while not game_over:
+
+    # if user clicks exit window, game quits
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            game_over = True
 
     clock.tick(fps)
     time = pygame.time.get_ticks()    # in milliseconds
@@ -70,12 +65,22 @@ while not game_over:
     screen.blit(bg, (0, scroll))
     screen.blit(bg, (0, scroll - 530))
 
+  
+    # moving the ship
+    '''if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_LEFT:
+            ship_move = -5
+        elif event.key == pygame.K_RIGHT:
+            ship_move = 5
+
+    x += ship_move
+    y = 400
+    ship(x, y)'''
     # draw ship
     screen.blit(ship, ((screen_width / 2) - 75, 400))
 
     # draw asteroids
     # asteroid_group.draw(pygame.display.get_surface())
-    # print(time)
     screen.blit(asteroid, (100, scroll))
 
     # draw title
@@ -86,10 +91,7 @@ while not game_over:
     if abs(scroll) > 530:
         scroll = 0
 
-    # if user clicks exit window, game quits
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            game_over = True
+    
 
     pygame.display.update()
 
