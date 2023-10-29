@@ -19,7 +19,6 @@ game_over = False
 scroll = 0
 scroll_speed = .5
 score = 0
-# asteroid_gap = 50
 ship_move = 0
 ship_speed = 0
 
@@ -36,22 +35,40 @@ asteroid_sizeX = random.randint(50, 100)
 asteroid_sizeY = random.randint(50, 100)
 
 # set the ships initial position
-shipX = (screen_width / 2) - 75
-shipY = 400
-
+shipX = (screen_width / 2) - 37.5
+shipY = 440
 
 # resize images
 bg = pygame.transform.scale(bg, (770, 530))
 asteroid = pygame.transform.scale(asteroid, (asteroid_sizeX, asteroid_sizeY))
-ship = pygame.transform.scale(ship, (150, 150))
+ship = pygame.transform.scale(ship, (75, 100))
 title = pygame.transform.scale(title, (700, 100))
 ammo = pygame.transform.scale(ammo, (50, 100))
 
-# start button 
-# class Button():
-# draw start button
-# screen.blit(start, ((screen_width / 2) - 75, 250))
+# start button
+class Start():
+    def __init__(self, x, y, start):
+        self.image = start
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
 
+    def draw(self):
+        
+        action = False    # mouse clicked trigger
+
+        # get mouse position
+        pos = pygame.mouse.get_pos()
+
+        # check if mouse is over the button
+        if self.rect.collidepoint(pos):
+            if pygame.mouse.get_pressed()[0] == 1:    # if left mouse button is clicked
+                action = True
+
+        # draw button
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+
+        return action
+    
 # the ship
 class Ship(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -70,8 +87,6 @@ class Asteroid(pygame.sprite.Sprite):
         self.rect.x = x    # x-coordinate of sprite's top left corner
         self.rect.y = y    # y-coordinate of sprite's top left corner
         
-            
-
     def update(self):
         self.rect.y += scroll_speed
         # if self.rect.y > 530:
@@ -87,11 +102,11 @@ class Ammo(pygame.sprite.Sprite):
 
     def update(self):
         self.rect.y -= scroll_speed
+
+# HOW TO HAVE MORE THAN 1 ASTEROID ???
     # if self.rect.y > 530:
         # self.rect.y = 0 # put asteroid back at top of screen
         # self.rect.x = random.randint(40, 730)
-
-
 
 asteroid_group = pygame.sprite.Group()
 roids = Asteroid(random.randint(40, 730), 0)
@@ -99,11 +114,17 @@ ship_group = pygame.sprite.Group()
 ammo_group = pygame.sprite.Group()
 ammos = Ammo(300, 530)
 
-
-# adding asteroids
+# adding asteroids ??
 asteroid_group.add(roids)
 
-# main loop
+
+# screen.blit(start, (screen_width / 2 - 60, screen_height/ 2 - 50))
+    
+
+
+#########################
+    ### MAIN LOOP ###
+#########################
 while not game_over:
 
     # if user clicks exit window, game quits
@@ -111,9 +132,9 @@ while not game_over:
         if event.type == pygame.QUIT:
             game_over = True
 
-    '''clock.tick(fps)
+    clock.tick(fps)
     time = pygame.time.get_ticks()    # in milliseconds
-'''
+    
     # draw background (two so theres seamless scrolling)
     screen.blit(bg, (0, scroll))
     screen.blit(bg, (0, scroll - 530))
@@ -123,37 +144,37 @@ while not game_over:
     # screen.blit(asteroid, (0, scroll))
     asteroid_group.draw(screen)
     asteroid_group.update()
+    
+    # if time / 1000 > 3:
+        # trying to generate more roids
 
     # draw ship
     screen.blit(ship, ((shipX, shipY)))
-
 
     # moving the ship
     pressed = pygame.key.get_pressed()
     
     if (pressed[K_RIGHT] or pressed[K_d]):    # if user pressed right arrow OR d key
-        shipX = shipX + 3
+        shipX = shipX + 4
         if shipX > 660:    # stop player if goes too far right
             shipX = 660
     if (pressed[K_LEFT] or pressed[K_a]):    # if user pressed left arrow OR a key
-        shipX = shipX - 3
+        shipX = shipX - 4
         if shipX < -45:    # stop player if goes too far left
             shipX = -45
 
     # draw ammo
     ammo_group.draw(screen)
     ammo_group.update()
-    
-
-    
 
     # check for ship/ asteroid collision
+    if shipY == roids.rect.bottom:
+        # game_over = True
+        scroll_speed = 0
     
-
     # if asteroid passes ship, stop game
     if roids.rect.y > 530:
         scroll_speed = 0
-
 
     # draw title
     # screen.blit(title, ((screen_width / 2) - 350, 40))

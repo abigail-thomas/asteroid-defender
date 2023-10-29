@@ -1,2 +1,3 @@
 # asteroid-defender
- First person shooter
+ 2d shooting game !
+ 
