@@ -85,15 +85,20 @@ while not game_over:
 
     # moving the ship
     pressed = pygame.key.get_pressed()
+    
     if (pressed[K_RIGHT] or pressed[K_d]):    # if user pressed right arrow OR d key
         shipX = shipX + 3
+        if shipX > 660:    # stop player if goes too far right
+            shipX = 660
     if (pressed[K_LEFT] or pressed[K_a]):    # if user pressed left arrow OR a key
         shipX = shipX - 3
+        if shipX < -45:    # stop player if goes too far left
+            shipX = -45
 
+    
 
     # draw asteroids
     # asteroid_group.draw(pygame.display.get_surface())
-    screen.blit(asteroid, (x, scroll - y))
     screen.blit(asteroid, (x, scroll - y))
 
     # draw title
