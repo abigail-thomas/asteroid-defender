@@ -25,14 +25,22 @@ ship_speed = 0
 
 # load images
 bg = pygame.image.load('asteroid-defender/img/stars.png')
-asteroid = pygame.image.load('asteroid-defender/img/asteroid.png')
+asteroid = pygame.image.load('asteroid-defender/img/asteroid.png').convert_alpha()
 ship = pygame.image.load('asteroid-defender/img/ship.png')
 title = pygame.image.load('asteroid-defender/img/title.png')
 start = pygame.image.load('asteroid-defender/img/start.png')
 
+x = random.randint(50, 100)
+y = random.randint(50, 100)
+
+# set the ships initial position
+shipX = (screen_width / 2) - 75
+shipY = 400
+
+
 # resize images
 bg = pygame.transform.scale(bg, (770, 530))
-asteroid = pygame.transform.scale(asteroid, (random.randint(50, 100), random.randint(50, 100)))
+asteroid = pygame.transform.scale(asteroid, (x, y))
 ship = pygame.transform.scale(ship, (150, 150))
 title = pygame.transform.scale(title, (700, 100))
 
@@ -42,6 +50,13 @@ title = pygame.transform.scale(title, (700, 100))
 # screen.blit(start, ((screen_width / 2) - 75, 250))
 
 # the ship
+class Ship(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init()
+        self.image = ship
+        self.rect = self.image.get_rect()
+        self.rect.x = x    # x-coordinate of sprite's top left corner
+        self.rect.y = y    # y-coordinate of sprite's top left corner
 
 # the asteroids 
 '''
@@ -65,23 +80,21 @@ while not game_over:
     screen.blit(bg, (0, scroll))
     screen.blit(bg, (0, scroll - 530))
 
-  
-    # moving the ship
-    '''if event.type == pygame.KEYDOWN:
-        if event.key == pygame.K_LEFT:
-            ship_move = -5
-        elif event.key == pygame.K_RIGHT:
-            ship_move = 5
-
-    x += ship_move
-    y = 400
-    ship(x, y)'''
     # draw ship
-    screen.blit(ship, ((screen_width / 2) - 75, 400))
+    screen.blit(ship, ((shipX, shipY)))
+
+    # moving the ship
+    pressed = pygame.key.get_pressed()
+    if (pressed[K_RIGHT] or pressed[K_d]):    # if user pressed right arrow OR d key
+        shipX = shipX + 3
+    if (pressed[K_LEFT] or pressed[K_a]):    # if user pressed left arrow OR a key
+        shipX = shipX - 3
+
 
     # draw asteroids
     # asteroid_group.draw(pygame.display.get_surface())
-    screen.blit(asteroid, (100, scroll))
+    screen.blit(asteroid, (x, scroll - y))
+    screen.blit(asteroid, (x, scroll - y))
 
     # draw title
     # screen.blit(title, ((screen_width / 2) - 350, 40))
