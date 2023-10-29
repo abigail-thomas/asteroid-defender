@@ -29,6 +29,8 @@ asteroid = pygame.image.load('asteroid-defender/img/asteroid.png').convert_alpha
 ship = pygame.image.load('asteroid-defender/img/ship.png')
 title = pygame.image.load('asteroid-defender/img/title.png')
 start = pygame.image.load('asteroid-defender/img/start.png')
+gameover = pygame.image.load('asteroid-defender/img/gameover.png')
+ammo = pygame.image.load('asteroid-defender/img/ammo.png')
 
 asteroid_sizeX = random.randint(50, 100)
 asteroid_sizeY = random.randint(50, 100)
@@ -43,6 +45,7 @@ bg = pygame.transform.scale(bg, (770, 530))
 asteroid = pygame.transform.scale(asteroid, (asteroid_sizeX, asteroid_sizeY))
 ship = pygame.transform.scale(ship, (150, 150))
 title = pygame.transform.scale(title, (700, 100))
+ammo = pygame.transform.scale(ammo, (50, 100))
 
 # start button 
 # class Button():
@@ -75,9 +78,26 @@ class Asteroid(pygame.sprite.Sprite):
             # self.rect.y = 0 # put asteroid back at top of screen
             # self.rect.x = random.randint(40, 730)
 
+class Ammo(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        self.image = ammo
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+    def update(self):
+        self.rect.y -= scroll_speed
+    # if self.rect.y > 530:
+        # self.rect.y = 0 # put asteroid back at top of screen
+        # self.rect.x = random.randint(40, 730)
+
+
+
 asteroid_group = pygame.sprite.Group()
 roids = Asteroid(random.randint(40, 730), 0)
 ship_group = pygame.sprite.Group()
+ammo_group = pygame.sprite.Group()
+ammos = Ammo(300, 530)
 
 
 # adding asteroids
@@ -98,9 +118,16 @@ while not game_over:
     screen.blit(bg, (0, scroll))
     screen.blit(bg, (0, scroll - 530))
 
+    # draw asteroids
+    # asteroid_group.draw(pygame.display.get_surface())
+    # screen.blit(asteroid, (0, scroll))
+    asteroid_group.draw(screen)
+    asteroid_group.update()
+
     # draw ship
     screen.blit(ship, ((shipX, shipY)))
-    
+
+
     # moving the ship
     pressed = pygame.key.get_pressed()
     
@@ -113,11 +140,12 @@ while not game_over:
         if shipX < -45:    # stop player if goes too far left
             shipX = -45
 
-    # draw asteroids
-    # asteroid_group.draw(pygame.display.get_surface())
-    # screen.blit(asteroid, (0, scroll))
-    asteroid_group.draw(screen)
-    asteroid_group.update()
+    # draw ammo
+    ammo_group.draw(screen)
+    ammo_group.update()
+    
+
+    
 
     # check for ship/ asteroid collision
     
@@ -125,7 +153,6 @@ while not game_over:
     # if asteroid passes ship, stop game
     if roids.rect.y > 530:
         scroll_speed = 0
-
 
 
     # draw title
