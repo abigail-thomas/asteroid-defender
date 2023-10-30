@@ -32,19 +32,19 @@ start = pygame.image.load('asteroid-defender/img/start.png')
 gameover = pygame.image.load('asteroid-defender/img/gameover.png')
 ammo = pygame.image.load('asteroid-defender/img/ammo.png')
 
-asteroid_sizeX = random.randint(50, 100)
-asteroid_sizeY = random.randint(50, 100)
-
 # set the ships initial position
 shipX = (screen_width / 2) - 37.5
 shipY = 440
 
 # resize images
 bg = pygame.transform.scale(bg, (770, 530))
+asteroid_sizeX = random.randint(50, 100)
+asteroid_sizeY = random.randint(50, 100)
 asteroid = pygame.transform.scale(asteroid, (asteroid_sizeX, asteroid_sizeY))
 ship = pygame.transform.scale(ship, (75, 100))
 title = pygame.transform.scale(title, (700, 100))
 ammo = pygame.transform.scale(ammo, (50, 100))
+
 '''
 # start button
 class Start():
@@ -93,7 +93,7 @@ class Asteroid(pygame.sprite.Sprite):
         # if self.rect.y > 530:
             # self.rect.y = 0 # put asteroid back at top of screen
             # self.rect.x = random.randint(40, 730)
-
+# the ammo
 class Ammo(pygame.sprite.Sprite):
     def __init__(self, x, y):
         self.image = ammo
@@ -117,10 +117,6 @@ ammos = Ammo(300, 530)
 
 # adding asteroids ??
 asteroid_group.add(roids)
-
-
-# screen.blit(start, (screen_width / 2 - 60, screen_height/ 2 - 40))
-    
 
 #########################
     ### MAIN LOOP ###
