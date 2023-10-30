@@ -15,6 +15,7 @@ clock = pygame.time.Clock()
 fps = 60
 
 # variables
+run = True
 game_over = False
 scroll = 0
 scroll_speed = .5
@@ -44,7 +45,7 @@ asteroid = pygame.transform.scale(asteroid, (asteroid_sizeX, asteroid_sizeY))
 ship = pygame.transform.scale(ship, (75, 100))
 title = pygame.transform.scale(title, (700, 100))
 ammo = pygame.transform.scale(ammo, (50, 100))
-
+'''
 # start button
 class Start():
     def __init__(self, x, y, start):
@@ -67,7 +68,7 @@ class Start():
         # draw button
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
-        return action
+        return action'''
     
 # the ship
 class Ship(pygame.sprite.Sprite):
@@ -118,19 +119,18 @@ ammos = Ammo(300, 530)
 asteroid_group.add(roids)
 
 
-# screen.blit(start, (screen_width / 2 - 60, screen_height/ 2 - 50))
+# screen.blit(start, (screen_width / 2 - 60, screen_height/ 2 - 40))
     
-
 
 #########################
     ### MAIN LOOP ###
 #########################
-while not game_over:
+while run:
 
     # if user clicks exit window, game quits
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            game_over = True
+            run = False
 
     clock.tick(fps)
     time = pygame.time.get_ticks()    # in milliseconds
@@ -156,26 +156,36 @@ while not game_over:
     
     if (pressed[K_RIGHT] or pressed[K_d]):    # if user pressed right arrow OR d key
         shipX = shipX + 4
-        if shipX > 660:    # stop player if goes too far right
-            shipX = 660
+        if shipX > 700:    # stop player if goes too far right
+            shipX = 700
     if (pressed[K_LEFT] or pressed[K_a]):    # if user pressed left arrow OR a key
         shipX = shipX - 4
-        if shipX < -45:    # stop player if goes too far left
-            shipX = -45
+        if shipX < 0:    # stop player if goes too far left
+            shipX = 0
 
     # draw ammo
     ammo_group.draw(screen)
     ammo_group.update()
 
     # check for ship/ asteroid collision
-    if shipY == roids.rect.bottom:
-        # game_over = True
-        scroll_speed = 0
+    if pygame.sprite.groupcollide(asteroid_group, ship_group, False, False):
+        game_over = True
     
-    # if asteroid passes ship, stop game
+    # if asteroid passes ship, game over
     if roids.rect.y > 530:
+        game_over = True
+
+    if game_over == True:
+
+
         scroll_speed = 0
 
+        # stop player movement and set back to initial position
+        shipX = shipX = (screen_width / 2) - 37.5
+            
+        # print GAME OVER
+        screen.blit(gameover, (screen_width/ 2 - 100, screen_height / 2 - 40))
+        
     # draw title
     # screen.blit(title, ((screen_width / 2) - 350, 40))
 
