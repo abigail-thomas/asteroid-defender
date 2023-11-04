@@ -48,17 +48,29 @@ title = pygame.transform.scale(title, (700, 100))
 gameover = pygame.transform.scale(gameover, (700, 100))
 ammo = pygame.transform.scale(ammo, (50, 100))
 
-ship_sprite = pygame.sprite.Sprite()
-asteroid_sprite = pygame.sprite.Sprite()
+# the ship
+class Ship(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init()
+        self.image = ship
+        self.rect = self.image.get_rect()
+        self.rect.x = x    # x-coordinate of sprite's top left corner
+        self.rect.y = y    # y-coordinate of sprite's top left corner
 
-ship_sprite.rect.x = 100
-ship_sprite.rect.y = 100
+# the asteroids 
+class Asteroid(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = asteroid
+        self.rect = self.image.get_rect()
+        self.rect.x = x    # x-coordinate of sprite's top left corner
+        self.rect.y = y    # y-coordinate of sprite's top left corner
+        
+    def update(self):
+        self.rect.y += scroll_speed
 
-asteroid_sprite.rect.x = 200
-asteroid_sprite.rect.y = 200
 
-if ship_sprite.collide_rect(asteroid_sprite):
-    print("collision")
+
 #########################
     ### MAIN LOOP ###
 #########################

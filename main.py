@@ -5,6 +5,25 @@ import random
 
 pygame.init()
 
+
+# import music
+from pygame import mixer
+
+# initialize pygame
+pygame.init()
+
+# initalize the music
+mixer.init()
+
+# load audio files
+mixer.music.load('asteroid-defender/audio/bg_music.mp3')
+
+# set volume
+mixer.music.set_volume(1)
+    
+# play the music
+mixer.music.play()
+
 screen_width = 770
 screen_height = 530
 
