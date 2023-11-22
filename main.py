@@ -1,108 +1,224 @@
+# importing libraries
 import pygame
 from pygame.locals import *
-
 import random
-
-pygame.init()
-
-# import music
 from pygame import mixer
 
 # initialize pygame
 pygame.init()
-
 # initalize the music
 mixer.init()
 
-# load audio files
-mixer.music.load('asteroid-defender/audio/bg_music.mp3')
+# hide mouse cursor
+pygame.mouse.set_visible(False)
 
+# load audio files
+mixer.music.load('asteroid-defender./audio/bg_music.mp3')
 # set volume
 mixer.music.set_volume(1)
-    
 # play the music
 mixer.music.play()
 
-screen_width = 770
-screen_height = 530
+# set the screen dimensions
+SCREEN_WIDTH = 770
+SCREEN_HEIGHT = 530
 
-screen = pygame.display.set_mode((screen_width, screen_height))
+# create the window, name it, and set icon
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Asteroid Defender')
+icon = pygame.image.load('asteroid-defender./img/ship.png')
+pygame.display.set_icon(icon)
 
+# frame rate
 clock = pygame.time.Clock()
 fps = 60
 
 # variables
 run = True
-game_over = False
+game_end = False
 start_game = False
 scroll = 0
 scroll_speed = .5
 score = 0
 ship_move = 0
 ship_speed = 0
-asteroids_list = []
 
 # load images
-bg = pygame.image.load('asteroid-defender/img/stars.png')
-asteroid_img = pygame.image.load('asteroid-defender/img/asteroid.png').convert_alpha()
-ship = pygame.image.load('asteroid-defender/img/ship.png')
-title = pygame.image.load('asteroid-defender/img/title.png')
-start = pygame.image.load('asteroid-defender/img/start.png')
-gameover = pygame.image.load('asteroid-defender/img/gameover.png')
-ammo = pygame.image.load('asteroid-defender/img/ammo.png')
-playagain = pygame.image.load('asteroid-defender/img/play_again.png')
-
-# set the ships initial position
-shipX = (screen_width / 2) - 37.5
-shipY = 440
-
-# asteroid size
-asteroidX = random.randint(50, 100)
-asteroidY = random.randint(50, 100)
+bg = pygame.image.load('asteroid-defender./img/stars.png')
+asteroid_img = pygame.image.load('asteroid-defender./img/asteroid.png')
+ship = pygame.image.load('asteroid-defender./img/ship.png')
+title = pygame.image.load('asteroid-defender./img/title.png')
+start = pygame.image.load('asteroid-defender./img/start.png')
+gameover = pygame.image.load('asteroid-defender./img/gameover.png')
+bullet = pygame.image.load('asteroid-defender./img/ammo.png')
+playagain = pygame.image.load('asteroid-defender./img/play_again.png')
 
 # resize images
 bg = pygame.transform.scale(bg, (770, 530))
+# random sizes for asteroids
+asteroidX = random.randint(50, 100)     
+asteroidY = random.randint(50, 100)
 asteroid_img = pygame.transform.scale(asteroid_img, (asteroidX, asteroidY))
 ship = pygame.transform.scale(ship, (75, 100))
 title = pygame.transform.scale(title, (700, 100))
 gameover = pygame.transform.scale(gameover, (700, 100))
-ammo = pygame.transform.scale(ammo, (50, 100))
+bullet = pygame.transform.scale(bullet, (100, 100))
 
-# the ship
+# spaceship 
 class Ship():
     def __init__(self, x, y):
         self.image = ship
         self.width = 75
         self.height = 100
         self.rect = pygame.Rect(0, 0, self.width, self.height)
-        self.rect.x = x    # x-coordinate of sprite's top left corner
-        self.rect.y = y    # y-coordinate of sprite's top left corner
+        self.rect.center = (x, y)
+
+    def move(self):
+
+        # moving the ship with left arrow, right arrow, a, or d
+        pressed = pygame.key.get_pressed()
+        # if user pressed right arrow OR d key
+        if (pressed[K_RIGHT] or pressed[K_d]):    
+            self.rect.x += 4
+            # stop player if goes too far right
+            if self.rect.x > 700:    
+                self.rect.x = 700
+        # if user pressed left arrow OR a key
+        if (pressed[K_LEFT] or pressed[K_a]):    
+            self.rect.x -= 4
+             # stop player if goes too far left
+            if self.rect.x < 0:   
+                self.rect.x = 0
+
 
     def draw(self):
-        
         screen.blit(self.image, (self.rect.x, self.rect.y))
         
-# the asteroids
+# asteroids
 class Asteroid():
 
     def __init__(self, x, y):
         self.image = asteroid_img
-        self.width = 80
-        self.height = 50
+        self.width = asteroidX
+        self.height = asteroidY
         self.rect = pygame.Rect(0, 0, self.width, self.height)
-        self.rect.x = x    # x-coordinate of sprite's top left corner
-        self.rect.y = y    # y-coordinate of sprite's top left corner
+        self.rect.center = (x, y)
+
+    def move(self):
+        # moving asteroids down the screen
+        self.rect.y += 1
 
     def draw(self):
-            
-        screen.blit(self.image, (self.rect.x, self.rect.y))    # HELP WHAT
-            
-player = Ship(shipX, shipY)
-asteroid = Asteroid(random.randint(0, 300), 0)
+        screen.blit(self.image, (self.rect.x, self.rect.y))
 
-# hide mouse cursor
-pygame.mouse.set_visible(False)
+# the ammo 
+class Ammo():
+
+    def __init__(self, x, y):
+        # self.image = bullet
+        self.width = 7.5
+        self.height = 15
+        self.rect = pygame.Rect(0, 0, self.width, self.height)
+        self.rect.center = (x, y)
+
+    def move(self):
+        # shooting the ammo up
+        self.rect.y -= 1
+
+    def draw(self):
+
+        pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)
+
+        # figure out how to have endless ammo shooting 
+
+
+# set the ships initial position
+shipX = (SCREEN_WIDTH / 2) - 37.5
+shipY = (SCREEN_HEIGHT - 50)
+
+# creating instances
+# the ship
+player = Ship(shipX, shipY)
+# the asteroids
+asteroid1 = Asteroid(random.randint(0, 200), random.randint(-200, 0))
+asteroid2 = Asteroid(random.randint(250, 400), random.randint(-200, 0))
+asteroid3 = Asteroid(random.randint(450, 750), random.randint(-200, 0))
+# the ammo
+ammo = Ammo(player.rect.x + 32.5, shipY - 20)
+
+# the start menu !
+def start_menu():
+    # draw background with no scrolling
+    screen.blit(bg, (0, 0))
+    # draw title
+    screen.blit(title, ((SCREEN_WIDTH / 2) - 350, 40))
+    # draw start
+    screen.blit(start, (SCREEN_WIDTH/ 2 - 280, SCREEN_HEIGHT / 2 - 40))
+    # draw ship with no movement allowed yet
+    player.draw()
+
+# the actual game running 
+def game_playing():
+    global score
+    # draw background with scrolling
+    screen.blit(bg, (0, scroll))
+    screen.blit(bg, (0, scroll - 530))
+    # draw ammo
+    ammo.draw()
+    # move the ammo
+    ammo.move()
+    # draw player
+    player.draw()
+    # allow left and right movement for the player
+    player.move()
+    # draw asteroids
+    asteroid1.draw()
+    asteroid2.draw()
+    asteroid3.draw()
+    # move asteroids
+    asteroid1.move()
+    asteroid2.move()
+    asteroid3.move()
+
+    # after asteroid is hit, put it back at the top of the screen
+    # increase score
+    if ammo.rect.colliderect(asteroid1):
+        score += 1
+        asteroid1.rect.x = random.randint(0, 200)
+        asteroid1.rect.y = random.randint(-200, 0)
+        ammo.rect.y = player.rect.y
+    if ammo.rect.colliderect(asteroid2):
+        score += 1
+        asteroid2.rect.x = random.randint(250, 400)
+        asteroid2.rect.y = random.randint(-200, 0)
+        ammo.rect.y = player.rect.y
+    if ammo.rect.colliderect(asteroid3):
+        score += 1
+        asteroid3.rect.x = random.randint(450, 750)
+        asteroid3.rect.y = random.randint(-200, 0)
+        ammo.rect.y = player.rect.y
+
+   
+
+# game over screen
+def game_over():
+    # draw background with no scrolling anymore
+    screen.blit(bg, (0, 0))
+    # print GAME OVER screen
+    screen.blit(gameover, ((SCREEN_WIDTH / 2) - 350, 40))
+    # ask user if they wish to play again
+    screen.blit(playagain, (SCREEN_WIDTH/ 2 - 330, SCREEN_HEIGHT / 2 - 40))
+    # draw ship in initial position with no movement allowed anymore
+    player.rect.x = shipX
+    player.draw()
+    # set asteroids back to initial position 
+    asteroid1.rect.x = random.randint(0, 200)
+    asteroid1.rect.y = random.randint(-200, 0)
+    asteroid2.rect.x = random.randint(250, 400)
+    asteroid2.rect.y = random.randint(-200, 0)
+    asteroid3.rect.x = random.randint(450, 750)
+    asteroid3.rect.y = random.randint(-200, 0)
+
 
 #########################
     ### MAIN LOOP ###
@@ -115,76 +231,41 @@ while run:
             run = False
 
     clock.tick(fps)
-    time = pygame.time.get_ticks()    # in milliseconds
-    
-    # draw background (two so theres seamless scrolling)
-    screen.blit(bg, (0, scroll))
-    screen.blit(bg, (0, scroll - 530))
+    time = pygame.time.get_ticks()
 
-    # user hasn't pressed Start yet:
-    # start button
     pressed = pygame.key.get_pressed()
     
-    if (pressed[K_SPACE]):    # if user pressed space bar
+    # if user presses space bar, begin playing game
+    if (pressed[K_SPACE]):  
         start_game = True
+    
+    # if game has not begun yet
+    if not start_game:
+        start_menu()
 
-    if start_game == False:
-        # draw title
-        screen.blit(title, ((screen_width / 2) - 350, 40))
-
-        # draw start
-        screen.blit(start, (screen_width/ 2 - 280, screen_height / 2 - 40))
-
-    # if user has pressed Start:
+    # if user has pressed space bar to start:
     else:
+        # game plays until game over
+        if not game_end:
+            game_playing()
 
-        if player.rect.colliderect(asteroid.rect):
-            game_over = True
-
-        asteroid.rect.y += 1
-        if asteroid.rect.y == screen_height:
-            game_over = True
-
-        # draw asteroids
-        for i in range(0, 10):
-
-            asteroid.draw()
-
-
-        # draw ship
-        player.draw()
-
-        # screen.blit(asteroid_img, (random.randint(0, screen_width), 0))
-
-        # moving the ship
-        pressed = pygame.key.get_pressed()
         
-        if (pressed[K_RIGHT] or pressed[K_d]):    # if user pressed right arrow OR d key
-            player.rect.x += 4
-            if player.rect.x > 700:    # stop player if goes too far right
-                player.rect.x = 700
-        if (pressed[K_LEFT] or pressed[K_a]):    # if user pressed left arrow OR a key
-            player.rect.x -= 4
-            if player.rect.x < 0:    # stop player if goes too far left
-                player.rect.x = 0
 
-        if game_over == True:
-
-            asteroid.rect.x = -100
-            player.rect.y = -100
-            scroll_speed = 0
-
-            # stop player movement and set back to initial position
-            shipX = shipX = (screen_width / 2) - 37.5
+        # check for player collision with asteroids OR asteroids pass the player
+        if player.rect.colliderect(asteroid1.rect) or player.rect.colliderect(asteroid2.rect) or player.rect.colliderect(asteroid3.rect) or asteroid1.rect.y == SCREEN_HEIGHT or asteroid2.rect.y == SCREEN_HEIGHT or asteroid3.rect.y == SCREEN_HEIGHT:
+            # if there is collision or asteroid passes, call game over
+            game_over()
+            # change game end to True
+            game_end = True
+            
                 
-            # print GAME OVER
-            screen.blit(gameover, ((screen_width / 2) - 350, 40))
+        # press space to restart
+        if (pressed[K_SPACE]):
+            # restart game
+            start_game = True
+            # set game over back to false
+            game_end = False
 
-            screen.blit(playagain, (screen_width/ 2 - 330, screen_height / 2 - 40))
-
-            if (pressed[K_SPACE]):
-                start_game == True
-                game_over = False
 
         # scroll the game
         scroll += scroll_speed
