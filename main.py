@@ -72,6 +72,7 @@ class Ship():
         self.height = 100
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (x, y)
+        self.speed = 5
 
     def move(self):
 
@@ -79,17 +80,16 @@ class Ship():
         pressed = pygame.key.get_pressed()
         # if user pressed right arrow OR d key
         if (pressed[K_RIGHT] or pressed[K_d]):    
-            self.rect.x += 4
+            self.rect.x += self.speed
             # stop player if goes too far right
             if self.rect.x > 700:    
                 self.rect.x = 700
         # if user pressed left arrow OR a key
         if (pressed[K_LEFT] or pressed[K_a]):    
-            self.rect.x -= 4
+            self.rect.x -= self.speed
              # stop player if goes too far left
             if self.rect.x < 0:   
                 self.rect.x = 0
-
 
     def draw(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
@@ -103,10 +103,11 @@ class Asteroid():
         self.height = asteroidY
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (x, y)
+        self.speed = 2
 
     def move(self):
         # moving asteroids down the screen
-        self.rect.y += 1
+        self.rect.y += self.speed
 
     def draw(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
@@ -120,15 +121,15 @@ class Ammo():
         self.height = 15
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (x, y)
+        self.speed = 5
 
     def move(self):
         # shooting the ammo up
-        self.rect.y -= 1
+        self.rect.y -= self.speed
 
     def draw(self):
 
         pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)
-
         # figure out how to have endless ammo shooting 
 
 
@@ -164,8 +165,10 @@ def game_playing():
     screen.blit(bg, (0, scroll))
     screen.blit(bg, (0, scroll - 530))
     # draw ammo
-    ammo.draw()
-    # move the ammo
+    # ammo.draw()
+    for i in range(10):
+        ammo.draw()
+    # move ammo
     ammo.move()
     # draw player
     player.draw()
@@ -180,25 +183,32 @@ def game_playing():
     asteroid2.move()
     asteroid3.move()
 
+    '''if ammo.rect.y < (SCREEN_HEIGHT // 2):
+        ammo.rect.y = player.rect.y + 20
+        ammo.rect.x = player.rect.x + 32.5'''
+
+
+
+    
+
     # after asteroid is hit, put it back at the top of the screen
     # increase score
+    if ammo.rect.colliderect(asteroid1) or ammo.rect.colliderect(asteroid2) or ammo.rect.colliderect(asteroid3) or ammo.rect.y < 0:
+        ammo.rect.y = player.rect.y + 20
+        ammo.rect.x = player.rect.x + 32.5
     if ammo.rect.colliderect(asteroid1):
         score += 1
         asteroid1.rect.x = random.randint(0, 200)
         asteroid1.rect.y = random.randint(-200, 0)
-        ammo.rect.y = player.rect.y
     if ammo.rect.colliderect(asteroid2):
         score += 1
         asteroid2.rect.x = random.randint(250, 400)
         asteroid2.rect.y = random.randint(-200, 0)
-        ammo.rect.y = player.rect.y
     if ammo.rect.colliderect(asteroid3):
         score += 1
         asteroid3.rect.x = random.randint(450, 750)
         asteroid3.rect.y = random.randint(-200, 0)
-        ammo.rect.y = player.rect.y
 
-   
 
 # game over screen
 def game_over():
@@ -218,6 +228,9 @@ def game_over():
     asteroid2.rect.y = random.randint(-200, 0)
     asteroid3.rect.x = random.randint(450, 750)
     asteroid3.rect.y = random.randint(-200, 0)
+    # set ammo back to initial position
+    ammo.rect.x = player.rect.x + 32.5
+    ammo.rect.y = shipY - 20
 
 
 #########################
@@ -230,8 +243,10 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
+
     clock.tick(fps)
     time = pygame.time.get_ticks()
+
 
     pressed = pygame.key.get_pressed()
     
@@ -252,10 +267,11 @@ while run:
         
 
         # check for player collision with asteroids OR asteroids pass the player
-        if player.rect.colliderect(asteroid1.rect) or player.rect.colliderect(asteroid2.rect) or player.rect.colliderect(asteroid3.rect) or asteroid1.rect.y == SCREEN_HEIGHT or asteroid2.rect.y == SCREEN_HEIGHT or asteroid3.rect.y == SCREEN_HEIGHT:
+        if player.rect.colliderect(asteroid1.rect) or player.rect.colliderect(asteroid2.rect) or player.rect.colliderect(asteroid3.rect) or asteroid1.rect.top > SCREEN_HEIGHT or asteroid2.rect.top > SCREEN_HEIGHT or asteroid3.rect.top > SCREEN_HEIGHT:
             # if there is collision or asteroid passes, call game over
             game_over()
             # change game end to True
+            print("here")
             game_end = True
             
                 
