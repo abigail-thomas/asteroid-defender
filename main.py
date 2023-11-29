@@ -10,11 +10,13 @@ pygame.init()
 mixer.init()
 
 # the audio
-#def bg_audio():
-#    pygame.mixer.Channel(0).play(pygame.mixer.Sound('audio/bg_music.mp3'))
-# bg_audio()
-#def game_over_audio():
-#    pygame.mixer.Channel(1).play(pygame.mixer.Sound('audio/game_over_audio.mp3'))
+def bg_audio():
+    pygame.mixer.Channel(0).play(pygame.mixer.Sound('audio/bg_music.mp3'))
+bg_audio()
+def game_over_audio():
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('audio/game_over_audio.mp3'))
+def boom_audio():
+    pygame.mixer.Channel(2).play(pygame.mixer.Sound('audio/boom.mp3'))
 
 
 # set the screen dimensions
@@ -157,8 +159,8 @@ asteroid1 = Asteroid(random.randint(0, 200), random.randint(-200, 0))
 asteroid2 = Asteroid(random.randint(250, 400), random.randint(-200, 0))
 asteroid3 = Asteroid(random.randint(450, 750), random.randint(-200, 0))
 # the ammo
-ammo = Ammo(player.rect.x + 32.5, shipY - 20)
-bullet = Bullet(player.rect.x + 32.5, shipY - 20)
+# ammo = Ammo(player.rect.x + 32.5, shipY - 20)
+bullet = Bullet(player.rect.x + 32.5, shipY - 10)
 bullets = []
 
 # the start menu !
@@ -183,10 +185,6 @@ def game_playing():
     # draw background with scrolling
     screen.blit(bg, (0, scroll))
     screen.blit(bg, (0, scroll - 530))
-    # draw ammo
-    ammo.draw()
-    # move ammo
-    ammo.move()
 
      # draw and move all existing bullets
     for bullet in bullets:
@@ -197,6 +195,7 @@ def game_playing():
         if bullet.rect.colliderect(asteroid1.rect):
             # increase score
             score += 1
+            boom_audio()
             # reset asteroid position
             asteroid1.rect.x = random.randint(0, 200)
             asteroid1.rect.y = random.randint(-200, 0)
@@ -205,12 +204,14 @@ def game_playing():
 
         if bullet.rect.colliderect(asteroid2.rect):
             score += 1
+            boom_audio()
             asteroid2.rect.x = random.randint(250, 400)
             asteroid2.rect.y = random.randint(-200, 0)
             bullets.remove(bullet)
 
         if bullet.rect.colliderect(asteroid3.rect):
             score += 1
+            boom_audio()
             asteroid3.rect.x = random.randint(450, 750)
             asteroid3.rect.y = random.randint(-200, 0)
             bullets.remove(bullet)
@@ -287,41 +288,33 @@ while run:
         # game plays until game over
         if not game_end:
             game_playing()
+            pygame.mixer.Channel(0).unpause()
 
-            pressed = pygame.key.get_pressed()   
-    # if user presses space bar, begin playing game
-    if (pressed[K_SPACE]):  
-        # Create a new instance of the Ammo class when space is pressed
-        ammo = Ammo(player.rect.x + 32.5, shipY - 20)
-        bullets.append(ammo)
-        start_game = True
-    
-    # if game has not begun yet
-    if not start_game:
-        start_menu()
+            #pressed = pygame.key.get_pressed()   
 
+            # Draw and move all existing bullets
+            for bullet in bullets:
+                bullet.draw()
+                bullet.move()
 
-    # game plays until game over
-    if not game_end:
-        # Draw and move all existing bullets
-        for bullet in bullets:
-            bullet.draw()
-            bullet.move()
+            # Remove bullets that are off-screen
+            bullets = [bullet for bullet in bullets if bullet.rect.y > 0]
 
-        # Remove bullets that are off-screen
-        bullets = [bullet for bullet in bullets if bullet.rect.y > 0]
-
-        # Add a new bullet every time space is pressed
-        if (pressed[K_SPACE]):
-            ammo = Ammo(player.rect.x + 32.5, shipY - 20)
-            bullets.append(ammo)
+            # Add a new bullet every time w or UP is pressed
+            if (pressed[K_w]) or (pressed[K_UP]):
+                ammo = Ammo(player.rect.x + 35, shipY - 40)
+                bullets.append(ammo)
 
     # check for player collision with asteroids OR asteroids pass the player
     if player.rect.colliderect(asteroid1.rect) or player.rect.colliderect(asteroid2.rect) or player.rect.colliderect(asteroid3.rect) or asteroid1.rect.top > SCREEN_HEIGHT or asteroid2.rect.top > SCREEN_HEIGHT or asteroid3.rect.top > SCREEN_HEIGHT:
         # if there is collision or asteroid passes, call game over
         game_over()
+        game_over_audio()
+        pygame.mixer.Channel(0).pause()
+
         # change game end to True
         game_end = True
+        # empty the list of bullets for new game 
         bullets = []
             
     # press space to restart
