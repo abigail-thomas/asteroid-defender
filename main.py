@@ -233,32 +233,10 @@ def game_playing():
     asteroid2.move()
     asteroid3.move()
 
-    '''if ammo.rect.y < (SCREEN_HEIGHT // 2):
-        ammo.rect.y = player.rect.y + 20
-        ammo.rect.x = player.rect.x + 32.5'''
-
-
-
     
-
     # after asteroid is hit, put it back at the top of the screen
     # increase score
-    '''if ammo.rect.colliderect(asteroid1) or ammo.rect.colliderect(asteroid2) or ammo.rect.colliderect(asteroid3) or ammo.rect.y < 0:
-        ammo.rect.y = player.rect.y + 20
-        ammo.rect.x = player.rect.x + 32.5
-    if ammo.rect.colliderect(asteroid1):
-        score += 1
-        asteroid1.rect.x = random.randint(0, 200)
-        asteroid1.rect.y = random.randint(-200, 0)
-    if ammo.rect.colliderect(asteroid2):
-        score += 1
-        asteroid2.rect.x = random.randint(250, 400)
-        asteroid2.rect.y = random.randint(-200, 0)
-    if ammo.rect.colliderect(asteroid3):
-        score += 1
-        asteroid3.rect.x = random.randint(450, 750)
-        asteroid3.rect.y = random.randint(-200, 0)'''
-
+    
 
 # game over screen
 def game_over():
@@ -283,7 +261,6 @@ def game_over():
     # set ammo back to initial position
     ammo.rect.x = player.rect.x + 32.5
     ammo.rect.y = shipY - 20
-
 
 # main game loop 
 while run:
@@ -323,45 +300,41 @@ while run:
     if not start_game:
         start_menu()
 
-    # if user has pressed space bar to start:
-    else:
-        # game plays until game over
-        if not game_end:
-            # Draw and move all existing bullets
-            for bullet in bullets:
-                bullet.draw()
-                bullet.move()
 
-            # Remove bullets that are off-screen
-            bullets = [bullet for bullet in bullets if bullet.rect.y > 0]
+    # game plays until game over
+    if not game_end:
+        # Draw and move all existing bullets
+        for bullet in bullets:
+            bullet.draw()
+            bullet.move()
 
-            # Add a new bullet every time space is pressed
-            if (pressed[K_SPACE]):
-                ammo = Ammo(player.rect.x + 32.5, shipY - 20)
-                bullets.append(ammo)
+        # Remove bullets that are off-screen
+        bullets = [bullet for bullet in bullets if bullet.rect.y > 0]
 
-
-        # check for player collision with asteroids OR asteroids pass the player
-        if player.rect.colliderect(asteroid1.rect) or player.rect.colliderect(asteroid2.rect) or player.rect.colliderect(asteroid3.rect) or asteroid1.rect.top > SCREEN_HEIGHT or asteroid2.rect.top > SCREEN_HEIGHT or asteroid3.rect.top > SCREEN_HEIGHT:
-            # if there is collision or asteroid passes, call game over
-            game_over()
-            # change game end to True
-            print("here")
-            game_end = True
-            
-                
-        # press space to restart
+        # Add a new bullet every time space is pressed
         if (pressed[K_SPACE]):
-            # restart game
-            start_game = True
-            # set game over back to false
-            game_end = False
+            ammo = Ammo(player.rect.x + 32.5, shipY - 20)
+            bullets.append(ammo)
 
+    # check for player collision with asteroids OR asteroids pass the player
+    if player.rect.colliderect(asteroid1.rect) or player.rect.colliderect(asteroid2.rect) or player.rect.colliderect(asteroid3.rect) or asteroid1.rect.top > SCREEN_HEIGHT or asteroid2.rect.top > SCREEN_HEIGHT or asteroid3.rect.top > SCREEN_HEIGHT:
+        # if there is collision or asteroid passes, call game over
+        game_over()
+        # change game end to True
+        game_end = True
+        bullets = []
+            
+    # press space to restart
+    if (pressed[K_SPACE]):
+        # restart game
+        start_game = True
+        # set game over back to false
+        game_end = False
 
-        # scroll the game
-        scroll += scroll_speed
-        if abs(scroll) > 530:
-            scroll = 0
+    # scroll the game
+    scroll += scroll_speed
+    if abs(scroll) > 530:
+        scroll = 0
 
     pygame.display.update()
 
