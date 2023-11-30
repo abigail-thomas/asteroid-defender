@@ -313,7 +313,12 @@ while run:
                 clicked = False
 
     # check for player collision with asteroids OR asteroids pass the player
-    if player.rect.colliderect(asteroid1.rect) or player.rect.colliderect(asteroid2.rect) or player.rect.colliderect(asteroid3.rect) or asteroid1.rect.top > SCREEN_HEIGHT or asteroid2.rect.top > SCREEN_HEIGHT or asteroid3.rect.top > SCREEN_HEIGHT:
+    if player.rect.colliderect(asteroid1.rect)\
+        or player.rect.colliderect(asteroid2.rect)\
+        or player.rect.colliderect(asteroid3.rect)\
+        or asteroid1.rect.top > SCREEN_HEIGHT\
+        or asteroid2.rect.top > SCREEN_HEIGHT\
+        or asteroid3.rect.top > SCREEN_HEIGHT:
         # if there is collision or asteroid passes, call game over
         game_over()
         game_over_audio()
