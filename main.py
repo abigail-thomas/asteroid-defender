@@ -9,7 +9,6 @@ pygame.init()
 mixer.init()
 
 font = pygame.font.SysFont('', 50)
-white = (255, 255, 255)
 
 # the audio
 def bg_audio():
@@ -43,6 +42,7 @@ scroll = 0
 scroll_speed = .5
 score = 0
 hi_score = 0
+clicked = False
 
 # load images
 bg = pygame.image.load('./img/stars.png')
@@ -130,7 +130,6 @@ class Bullet():
 class Ammo():
 
     def __init__(self, x, y):
-        
         self.width = 7.5
         self.height = 15
         self.rect = pygame.Rect(0, 0, self.width, self.height)
@@ -146,6 +145,18 @@ class Ammo():
         
     def create_new_bullet(self):
         return Bullet(self.rect.x + 32.5, self.rect.y - 20)
+    
+class Button():
+
+    def __init__(self, x, y):
+        self.width = 225
+        self.height = 60
+        self.rect = pygame.Rect(0, 0, self.width, self.height)
+        self.rect.center = (x, y)
+    
+    def draw(self):
+        pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)
+
 
 # set the ships initial position
 shipX = (SCREEN_WIDTH / 2) - 37.5
@@ -163,6 +174,8 @@ asteroid3 = Asteroid(random.randint(450, 750), random.randint(-200, 0))
 bullet = Bullet(player.rect.x + 32.5, shipY - 10)
 bullets = []
 
+button = Button(SCREEN_WIDTH/ 2 + 5, SCREEN_HEIGHT / 2 - 20)
+
 # the start menu !
 def start_menu():
     # show mouse cursor
@@ -172,9 +185,11 @@ def start_menu():
     # draw title
     screen.blit(title, ((SCREEN_WIDTH / 2) - 350, 40))
     # draw start
-    screen.blit(start, (SCREEN_WIDTH/ 2 - 280, SCREEN_HEIGHT / 2 - 40))
+    screen.blit(start, (SCREEN_WIDTH/ 2 - 60, SCREEN_HEIGHT / 2 - 40))
     # draw ship with no movement allowed yet
     player.draw()
+
+    button.draw()
 
 # the text 
 def draw_text(text, font, text_col, x, y):
@@ -191,7 +206,7 @@ def game_playing():
     screen.blit(bg, (0, scroll))
     screen.blit(bg, (0, scroll - 530))
 
-    draw_text(str(score), font, white, 20, 20)
+    draw_text(str(score), font, (255, 0, 0), 20, 20)
 
      # draw and move all existing bullets
     for bullet in bullets:
@@ -249,7 +264,7 @@ def game_over():
     # print GAME OVER screen
     screen.blit(gameover, ((SCREEN_WIDTH / 2) - 350, 40))
     # ask user if they wish to play again
-    screen.blit(playagain, (SCREEN_WIDTH/ 2 - 330, SCREEN_HEIGHT / 2 - 40))
+    screen.blit(playagain, (SCREEN_WIDTH/ 2 - 90, SCREEN_HEIGHT / 2 - 40))
     # draw ship in initial position with no movement allowed anymore
     player.rect.x = shipX
     player.draw()
@@ -266,6 +281,8 @@ def game_over():
 
     # draw hi score here 
 
+    button.draw()
+
 # main game loop 
 while run:
 
@@ -278,9 +295,22 @@ while run:
     time = pygame.time.get_ticks()
 
     pressed = pygame.key.get_pressed()   
-    # if user presses space bar, begin playing game
-    if (pressed[K_SPACE]):  
+
+   
+    # Get the mouse position
+    mouse_pos = pygame.mouse.get_pos()
+
+    # Check if the mouse is over the button
+    if button.rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0] == 1:
+        # Do something
         start_game = True
+
+        if game_end:
+            print("here")
+            start_game = True
+            game_end = False
+        
+    # if pygame.mouse.get_pos() and :
     
     # if game has not begun yet
     if not start_game:
@@ -312,6 +342,7 @@ while run:
             if pygame.mouse.get_pressed()[0] == 0:    # if left mouse bar not clicked
                 clicked = False
 
+
     # check for player collision with asteroids OR asteroids pass the player
     if player.rect.colliderect(asteroid1.rect)\
         or player.rect.colliderect(asteroid2.rect)\
@@ -335,11 +366,7 @@ while run:
             score = 0
             
     # press space to restart
-    if (pressed[K_SPACE]):
-        # restart game
-        start_game = True
-        # set game over back to false
-        game_end = False
+    
 
     # scroll the game
     scroll += scroll_speed
