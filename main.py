@@ -152,7 +152,7 @@ shipY = (SCREEN_HEIGHT - 50)
 
 # creating instances
 # the ship
-player = Ship(shipX, shipY)
+player = Ship(shipX + 37.5, shipY)
 # the asteroids
 asteroid1 = Asteroid(random.randint(0, 200), random.randint(-200, 0))
 asteroid2 = Asteroid(random.randint(250, 400), random.randint(-200, 0))
@@ -294,21 +294,14 @@ while run:
             # Remove bullets that are off-screen
             bullets = [bullet for bullet in bullets if bullet.rect.y > 0]
 
-            # Add a new bullet every time w or UP is pressed
-            if (pressed[K_w]) or (pressed[K_UP]) and not clicked:
-                ammo = Ammo(player.rect.x + 35, shipY - 40)
-                bullets.append(ammo)
-
-            elif not (pressed[K_w]) or not (pressed[K_UP]):
-                clicked = False 
-
-            '''if pygame.mouse.get_pressed()[0] == 1 and clicked == False:    # if left mouse bar clicked
+            # shoot when user clicks mouse
+            if pygame.mouse.get_pressed()[0] == 1 and clicked == False:    # if left mouse bar clicked
                 clicked = True
                 ammo = Ammo(player.rect.x + 35, shipY - 40)
                 bullets.append(ammo)
     
             if pygame.mouse.get_pressed()[0] == 0:    # if left mouse bar not clicked
-                clicked = False'''
+                clicked = False
 
     # check for player collision with asteroids OR asteroids pass the player
     if player.rect.colliderect(asteroid1.rect) or player.rect.colliderect(asteroid2.rect) or player.rect.colliderect(asteroid3.rect) or asteroid1.rect.top > SCREEN_HEIGHT or asteroid2.rect.top > SCREEN_HEIGHT or asteroid3.rect.top > SCREEN_HEIGHT:
