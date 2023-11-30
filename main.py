@@ -142,10 +142,9 @@ class Ammo():
 
     def draw(self):
         pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)
-        # figure out how to have endless ammo shooting 
-
+        
     def create_new_bullet(self):
-        return Bullet(self.rect.x + 32.5, self.recy.y - 20)
+        return Bullet(self.rect.x + 32.5, self.rect.y - 20)
 
 # set the ships initial position
 shipX = (SCREEN_WIDTH / 2) - 37.5
@@ -217,7 +216,7 @@ def game_playing():
             bullets.remove(bullet)
 
         # remove bullets that are off-screen
-        if bullet.rect.y < 0:
+        if bullet.rect.bottom < 0:
             bullets.remove(bullet)
 
 
@@ -233,11 +232,6 @@ def game_playing():
     asteroid1.move()
     asteroid2.move()
     asteroid3.move()
-
-    
-    # after asteroid is hit, put it back at the top of the screen
-    # increase score
-    
 
 # game over screen
 def game_over():
@@ -260,8 +254,8 @@ def game_over():
     asteroid3.rect.x = random.randint(450, 750)
     asteroid3.rect.y = random.randint(-200, 0)
     # set ammo back to initial position
-    ammo.rect.x = player.rect.x + 32.5
-    ammo.rect.y = shipY - 20
+    # ammo.rect.x = player.rect.x + 32.5
+    # ammo.rect.y = shipY - 20
 
 # main game loop 
 while run:
@@ -301,9 +295,20 @@ while run:
             bullets = [bullet for bullet in bullets if bullet.rect.y > 0]
 
             # Add a new bullet every time w or UP is pressed
-            if (pressed[K_w]) or (pressed[K_UP]):
+            if (pressed[K_w]) or (pressed[K_UP]) and not clicked:
                 ammo = Ammo(player.rect.x + 35, shipY - 40)
                 bullets.append(ammo)
+
+            elif not (pressed[K_w]) or not (pressed[K_UP]):
+                clicked = False 
+
+            '''if pygame.mouse.get_pressed()[0] == 1 and clicked == False:    # if left mouse bar clicked
+                clicked = True
+                ammo = Ammo(player.rect.x + 35, shipY - 40)
+                bullets.append(ammo)
+    
+            if pygame.mouse.get_pressed()[0] == 0:    # if left mouse bar not clicked
+                clicked = False'''
 
     # check for player collision with asteroids OR asteroids pass the player
     if player.rect.colliderect(asteroid1.rect) or player.rect.colliderect(asteroid2.rect) or player.rect.colliderect(asteroid3.rect) or asteroid1.rect.top > SCREEN_HEIGHT or asteroid2.rect.top > SCREEN_HEIGHT or asteroid3.rect.top > SCREEN_HEIGHT:
