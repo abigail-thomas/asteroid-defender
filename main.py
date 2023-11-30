@@ -4,10 +4,12 @@ from pygame.locals import *
 import random
 from pygame import mixer
 
-# initialize pygame
+# initialize pygame and music
 pygame.init()
-# initalize the music
 mixer.init()
+
+font = pygame.font.SysFont('', 50)
+white = (255, 255, 255)
 
 # the audio
 def bg_audio():
@@ -40,8 +42,7 @@ start_game = False
 scroll = 0
 scroll_speed = .5
 score = 0
-ship_move = 0
-ship_speed = 0
+hi_score = 0
 
 # load images
 bg = pygame.image.load('./img/stars.png')
@@ -175,6 +176,11 @@ def start_menu():
     # draw ship with no movement allowed yet
     player.draw()
 
+# the text 
+def draw_text(text, font, text_col, x, y):
+    img = font.render(text, True, text_col)
+    screen.blit(img, (x, y))
+
 # the actual game running 
 def game_playing():
     # hide mouse cursor
@@ -184,6 +190,8 @@ def game_playing():
     # draw background with scrolling
     screen.blit(bg, (0, scroll))
     screen.blit(bg, (0, scroll - 530))
+
+    draw_text(str(score), font, white, 20, 20)
 
      # draw and move all existing bullets
     for bullet in bullets:
@@ -219,7 +227,6 @@ def game_playing():
         if bullet.rect.bottom < 0:
             bullets.remove(bullet)
 
-
     # draw player
     player.draw()
     # allow left and right movement for the player
@@ -247,15 +254,17 @@ def game_over():
     player.rect.x = shipX
     player.draw()
     # set asteroids back to initial position 
-    asteroid1.rect.x = random.randint(0, 200)
+    asteroid1.rect.x = random.randint(20, 200)
     asteroid1.rect.y = random.randint(-200, 0)
     asteroid2.rect.x = random.randint(250, 400)
     asteroid2.rect.y = random.randint(-200, 0)
-    asteroid3.rect.x = random.randint(450, 750)
+    asteroid3.rect.x = random.randint(450, 740)
     asteroid3.rect.y = random.randint(-200, 0)
     # set ammo back to initial position
     # ammo.rect.x = player.rect.x + 32.5
     # ammo.rect.y = shipY - 20
+
+    # draw hi score here 
 
 # main game loop 
 while run:
@@ -286,12 +295,12 @@ while run:
 
             #pressed = pygame.key.get_pressed()   
 
-            # Draw and move all existing bullets
+            # draw and move all existing bullets
             for bullet in bullets:
                 bullet.draw()
                 bullet.move()
 
-            # Remove bullets that are off-screen
+            # remove bullets that are off-screen
             bullets = [bullet for bullet in bullets if bullet.rect.y > 0]
 
             # shoot when user clicks mouse
@@ -314,6 +323,11 @@ while run:
         game_end = True
         # empty the list of bullets for new game 
         bullets = []
+
+        if score > hi_score:
+            hi_score = score
+
+            score = 0
             
     # press space to restart
     if (pressed[K_SPACE]):
