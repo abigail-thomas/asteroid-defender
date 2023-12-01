@@ -101,7 +101,7 @@ class Asteroid():
         self.height = asteroidY
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (x, y)
-        self.speed = 2
+        self.speed = 1.5
 
     def move(self):
         # moving asteroids down the screen
@@ -206,7 +206,7 @@ def game_playing():
     screen.blit(bg, (0, scroll))
     screen.blit(bg, (0, scroll - 530))
 
-    draw_text(str(score), font, (255, 0, 0), 20, 20)
+    
 
      # draw and move all existing bullets
     for bullet in bullets:
@@ -255,6 +255,9 @@ def game_playing():
     asteroid2.move()
     asteroid3.move()
 
+    # draw score in top left corner
+    draw_text(str(score), font, (255, 0, 0), 20, 20)
+
 # game over screen
 def game_over():
     # show mouse cursor
@@ -262,7 +265,7 @@ def game_over():
     # draw background with no scrolling anymore
     screen.blit(bg, (0, 0))
     # print GAME OVER screen
-    screen.blit(gameover, ((SCREEN_WIDTH / 2) - 350, 40))
+    screen.blit(gameover, ((SCREEN_WIDTH / 2) - 350, 80))
     # ask user if they wish to play again
     screen.blit(playagain, (SCREEN_WIDTH/ 2 - 90, SCREEN_HEIGHT / 2 - 40))
     # draw ship in initial position with no movement allowed anymore
@@ -273,14 +276,13 @@ def game_over():
     asteroid1.rect.y = random.randint(-200, 0)
     asteroid2.rect.x = random.randint(250, 400)
     asteroid2.rect.y = random.randint(-200, 0)
-    asteroid3.rect.x = random.randint(450, 740)
+    asteroid3.rect.x = random.randint(450, 720)
     asteroid3.rect.y = random.randint(-200, 0)
     # set ammo back to initial position
     # ammo.rect.x = player.rect.x + 32.5
     # ammo.rect.y = shipY - 20
 
-    # draw hi score here 
-
+    
     button.draw()
 
 # main game loop 
@@ -306,7 +308,6 @@ while run:
         start_game = True
 
         if game_end:
-            print("here")
             start_game = True
             game_end = False
         
@@ -364,6 +365,11 @@ while run:
             hi_score = score
 
             score = 0
+
+        # draw hi score here 
+        draw_text(str("Hi-Score: "), font, (255, 0, 0), 20, 20)
+        draw_text(str(hi_score), font, (255, 0, 0), 200, 20)
+
             
     # press space to restart
     
