@@ -368,7 +368,7 @@ while run:
 
         # draw hi score here 
         draw_text(str("Hi-Score: "), font, (255, 0, 0), 20, 20)
-        draw_text(str(hi_score), font, (255, 0, 0), 200, 20)
+        draw_text(str(hi_score), font, (255, 0, 0), 180, 20)
 
             
     # press space to restart
